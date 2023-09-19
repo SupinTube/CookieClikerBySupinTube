@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Clicker</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css')}}" />
+</head>
+<body>
+    <h1>Cookie Clicker</h1>
+
+    <!-- Display cookies and cookies per click -->
+    <p>Cookies: <span id="cookie-count">{{ cookies }}</span></p>
+    <p>Cookies per Click: {{ cookies_per_click }}</p>
+
+    <!-- Click button -->
+    <button  id="click"><img src="static/images/cookie.gif" style="height: 100px;"></button>
+
+    <!-- Building shop -->
+    <h2>Building Shop</h2>
+    <ul>
+        {% for building in buildings %}
+        <li>
+            <strong>{{ building.name }}</strong>
+            <p>Cookies per Second: {{ building.cps }}</p>
+            <p>Cost: {{ building.cost }} cookies</p>
+            <button class="buy-button" data-index="{{ loop.index - 1 }}">Buy</button>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        $(document).ready(function() {
+            $('#click').on('click', function() {
+                $.get('/click', function(data) {
+                    $('#cookie-count').text(data.cookies);
+
+                });
+            });
+
+            $('.buy-button').on('click', function() {
+                var index = $(this).data('index');
+                location.reload();
+                $.get('/buy/' + index, function(data) {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert(data.message);
+                        $('#cookie-count').text(data.cookies);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
